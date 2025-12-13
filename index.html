@@ -18,103 +18,76 @@
       border-radius: 16px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     }
-    h1 {
-      font-size: 1.5rem;
-      margin-bottom: 12px;
-    }
-    p {
-      color: #555;
-      margin-bottom: 16px;
-    }
     textarea {
       width: 100%;
-      min-height: 160px;
+      min-height: 140px;
       font-size: 1rem;
       padding: 12px;
       border-radius: 12px;
       border: 1px solid #ccc;
-      resize: vertical;
     }
-    .hint {
-      margin-top: 12px;
+    button {
+      margin-top: 10px;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+    .ok {
+      margin-left: 10px;
+      color: #16a34a;
       font-size: 0.9rem;
-      color: #666;
-    }
-    .output {
-      margin-top: 20px;
-    }
-    .output textarea {
-      background: #f9fafb;
+      display: none;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>닉네임 쉼표 자동 생성기</h1>
-    <p>닉네임을 입력하면 <strong>공백 또는 줄바꿈</strong> 기준으로 자동으로 쉼표(,)가 들어갑니다.</p>
+    <h2>닉네임 쉼표 자동 생성기</h2>
 
-    <textarea id="input" placeholder="닉네임을 입력하세요&#10;"></textarea>
+    <textarea id="input" placeholder="닉네임 입력 (공백/줄바꿈)"></textarea>
 
-<div class="output">
-  <p><strong>결과</strong></p>
-  <textarea id="output" readonly></textarea>
+    <textarea id="output" readonly></textarea>
 
-  <button id="copyBtn"
-    style="margin-top:10px;padding:10px 16px;border:none;border-radius:10px;
-           background:#2563eb;color:white;font-size:0.95rem;cursor:pointer;">
-    📋 클립보드로 복사
-  </button>
-
-  <span id="copyStatus"
-    style="margin-left:10px;font-size:0.9rem;color:#16a34a;display:none;">
-    복사됨!
-  </span>
-</div>
-
-
-    <div class="hint"></div>
+    <button id="copyBtn">📋 클립보드 복사</button>
+    <span id="status" class="ok">복사됨!</span>
   </div>
 
   <script>
     const input = document.getElementById('input');
     const output = document.getElementById('output');
-
-    function formatNicknames(text) {
-      return text
-        .split(/\s+/)              // 공백, 줄바꿈 기준 분리
-        .filter(v => v.length > 0)  // 빈 값 제거
-        .join(', ');                // 쉼표로 연결
-    }
+    const copyBtn = document.getElementById('copyBtn');
+    const status = document.getElementById('status');
 
     input.addEventListener('input', () => {
-      output.value = formatNicknames(input.value);
+      output.value = input.value
+        .split(/\\s+/)
+        .filter(Boolean)
+        .join(', ');
     });
+
+    copyBtn.addEventListener('click', () => {
+      if (!output.value) return;
+
+      // 최신 브라우저
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(output.value).then(showOk);
+      } else {
+        // iOS / 구형 브라우저 대응
+        output.select();
+        document.execCommand('copy');
+        output.blur();
+        showOk();
+      }
+    });
+
+    function showOk() {
+      status.style.display = 'inline';
+      setTimeout(() => status.style.display = 'none', 1500);
+    }
   </script>
 </body>
 </html>
-
-<script>
-  const input = document.getElementById('input');
-  const output = document.getElementById('output');
-  const copyBtn = document.getElementById('copyBtn');
-  const copyStatus = document.getElementById('copyStatus');
-
-  function formatNicknames(text) {
-    return text
-      .split(/\s+/)
-      .filter(v => v.length > 0)
-      .join(', ');
-  }
-
-  input.addEventListener('input', () => {
-    output.value = formatNicknames(input.value);
-  });
-
-  copyBtn.addEventListener('click', async () => {
-    if (!output.value) return;
-    await navigator.clipboard.writeText(output.value);
-    copyStatus.style.display = 'inline';
-    setTimeout(() => copyStatus.style.display = 'none', 1500);
-  });
-</script>
-
