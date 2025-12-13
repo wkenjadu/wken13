@@ -18,80 +18,90 @@
       border-radius: 16px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     }
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+    }
+    p {
+      color: #555;
+      margin-bottom: 16px;
+    }
     textarea {
       width: 100%;
-      min-height: 140px;
+      min-height: 160px;
       font-size: 1rem;
       padding: 12px;
       border-radius: 12px;
       border: 1px solid #ccc;
+      resize: vertical;
     }
-    button {
-      margin-top: 10px;
-      padding: 10px 16px;
-      border: none;
-      border-radius: 10px;
-      background: #2563eb;
-      color: white;
-      font-size: 0.95rem;
-      cursor: pointer;
-    }
-    .ok {
-      margin-left: 10px;
-      color: #16a34a;
+    .hint {
+      margin-top: 12px;
       font-size: 0.9rem;
-      display: none;
+      color: #666;
+    }
+    .output {
+      margin-top: 20px;
+    }
+    .output textarea {
+      background: #f9fafb;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>쉼표 자동 생성</h2>
+    <h1>쉼표 자동 생성</h1>
+    <p>닉네임을 입력하면 <strong>공백 또는 줄바꿈</strong> 기준으로 자동으로 쉼표(,)가 들어갑니다.</p>
 
-    <textarea id="input" placeholder="닉네임 입력 (공백/줄바꿈)"></textarea>
+    <textarea id="input" placeholder="닉네임을 입력하세요&#10;예: 철수 영희 민수"></textarea>
 
-    <textarea id="output" readonly></textarea>
+    <div class="output">
+      <p><strong>결과</strong></p>
+      <textarea id="output" readonly></textarea>
+    </div>
 
-    <button id="copyBtn">📋 클립보드 복사</button>
-    <span id="status" class="ok">복사됨!</span>
+    <div class="hint">예시 결과: 철수, 영희, 민수</div>
+
+    <hr style="margin:24px 0;">
+
+    <p><strong>🎯 룰렛 사이트 바로가기</strong></p>
+    <a id="rouletteLink" href="https://lazygyu.github.io/roulette/" target="_blank" style="display:inline-block;margin-top:8px;padding:10px 16px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-size:0.95rem;">
+      룰렛 사이트 열기
+    </a>
+
+    <p style="margin-top:12px;font-size:0.9rem;color:#555;">※ 닉네임이 자동으로 룰렛에 전달됩니다</p>
+
+    <p style="margin-top:12px;font-size:0.9rem;color:#555;">※ 닉네임이 자동으로 룰렛에 전달됩니다</p>
   </div>
-<script>
-  const input = document.getElementById('input');
-  const output = document.getElementById('output');
-  const copyBtn = document.getElementById('copyBtn');
-  const copyStatus = document.getElementById('copyStatus');
 
-  // 띄어쓰기 + 엔터 → 컴마
-  input.addEventListener('input', () => {
-    const list = input.value
-      .split(/\s+/)        // ✅ 스페이스 + 엔터 전부 포함
-      .map(v => v.trim())
-      .filter(Boolean);
+  <script>
+    const input = document.getElementById('input');
+    const output = document.getElementById('output');
 
-    output.value = list.join(', ');
-  });
-
-  // 클립보드 복사 (모든 브라우저 대응)
-  copyBtn.addEventListener('click', () => {
-    if (!output.value) return;
-
-    if (navigator.clipboard && window.isSecureContext) {
-      navigator.clipboard.writeText(output.value).then(showCopied);
-    } else {
-      output.select();
-      document.execCommand('copy');
-      output.blur();
-      showCopied();
+    function formatNicknames(text) {
+      return text
+        .split(/\s+/)              // 공백, 줄바꿈 기준 분리
+        .filter(v => v.length > 0)  // 빈 값 제거
+        .join(', ');                // 쉼표로 연결
     }
-  });
 
-  function showCopied() {
-    copyStatus.style.display = 'inline';
-    setTimeout(() => {
-      copyStatus.style.display = 'none';
-    }, 1500);
-  }
-</script>
+    input.addEventListener('input', () => {
+      const formatted = formatNicknames(input.value);
+      output.value = formatted;
 
+      // 룰렛 사이트로 닉네임 자동 전달 (URL 파라미터)
+      const encoded = encodeURIComponent(formatted);
+      const link = document.getElementById('rouletteLink');
+      link.href = `https://lazygyu.github.io/roulette/?names=${encoded}`;
+    });
+      output.value = formatted;
+
+      // 룰렛 사이트로 닉네임 자동 전달 (URL 파라미터)
+      const encoded = encodeURIComponent(formatted);
+      const link = document.getElementById('rouletteLink');
+      link.href = `https://lazygyu.github.io/roulette/?names=${encoded}`;
+    });
+    });
+  </script>
 </body>
 </html>
