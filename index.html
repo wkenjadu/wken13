@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>닉네임 쉼표 자동 생성기</title>
+  <title>닉네임 쉼표 자동 생성</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
@@ -46,7 +46,7 @@
 </head>
 <body>
   <div class="container">
-    <h2>닉네임 쉼표 자동 생성기</h2>
+    <h2>닉네임 쉼표 자동 생성</h2>
 
     <textarea id="input" placeholder="닉네임 입력 (공백/줄바꿈)"></textarea>
 
@@ -58,15 +58,39 @@
 <script>
   const input = document.getElementById('input');
   const output = document.getElementById('output');
+  const copyBtn = document.getElementById('copyBtn');
+  const copyStatus = document.getElementById('copyStatus');
 
+  // 띄어쓰기 + 엔터 → 컴마
   input.addEventListener('input', () => {
-    const lines = input.value
-      .split(/\n+/)          // 줄바꿈 기준
+    const list = input.value
+      .split(/\s+/)        // ✅ 스페이스 + 엔터 전부 포함
       .map(v => v.trim())
       .filter(Boolean);
 
-    output.value = lines.join(', ');
+    output.value = list.join(', ');
   });
+
+  // 클립보드 복사 (모든 브라우저 대응)
+  copyBtn.addEventListener('click', () => {
+    if (!output.value) return;
+
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(output.value).then(showCopied);
+    } else {
+      output.select();
+      document.execCommand('copy');
+      output.blur();
+      showCopied();
+    }
+  });
+
+  function showCopied() {
+    copyStatus.style.display = 'inline';
+    setTimeout(() => {
+      copyStatus.style.display = 'none';
+    }, 1500);
+  }
 </script>
 
 </body>
