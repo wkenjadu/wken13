@@ -53,14 +53,19 @@
     <h1>쉼표 자동 생성</h1>
     <p>닉네임을 입력하면 <strong>공백 또는 줄바꿈</strong> 기준으로 자동으로 쉼표(,)가 들어갑니다.</p>
 
-    <textarea id="input" placeholder="닉네임을 입력하세요&#10;예: 철수 영희 민수"></textarea>
+    <textarea id="input" placeholder="닉네임을 입력하세요&#10;"></textarea>
 
-    <div class="output">
-      <p><strong>결과</strong></p>
-      <textarea id="output" readonly></textarea>
-    </div>
+<div class="output">
+  <p><strong>결과</strong></p>
+  <textarea id="output" readonly></textarea>
 
-    <div class="hint">예시 결과: 철수, 영희, 민수</div>
+  <button id="copyBtn" style="margin-top:10px;">📋 클립보드 복사</button>
+  <span id="status" style="margin-left:10px;color:#16a34a;display:none;">
+    복사됨!
+  </span>
+</div>
+
+
 
     <hr style="margin:24px 0;">
 
@@ -74,34 +79,37 @@
     <p style="margin-top:12px;font-size:0.9rem;color:#555;">※ 닉네임이 자동으로 룰렛에 전달됩니다</p>
   </div>
 
-  <script>
-    const input = document.getElementById('input');
-    const output = document.getElementById('output');
+<script>
+  const input = document.getElementById('input');
+  const output = document.getElementById('output');
+  const copyBtn = document.getElementById('copyBtn');
+  const status = document.getElementById('status');
 
-    function formatNicknames(text) {
-      return text
-        .split(/\s+/)              // 공백, 줄바꿈 기준 분리
-        .filter(v => v.length > 0)  // 빈 값 제거
-        .join(', ');                // 쉼표로 연결
-    }
+  function formatNicknames(text) {
+    return text
+      .replace(/\u00A0/g, ' ')   // 특수 공백
+      .replace(/\n/g, ' ')       // 엔터
+      .split(' ')                // 공백 기준
+      .map(v => v.trim())
+      .filter(v => v !== '')
+      .join(', ');
+  }
 
-    input.addEventListener('input', () => {
-      const formatted = formatNicknames(input.value);
-      output.value = formatted;
+  // 입력 → 결과
+  input.addEventListener('input', () => {
+    output.value = formatNicknames(input.value);
+  });
 
-      // 룰렛 사이트로 닉네임 자동 전달 (URL 파라미터)
-      const encoded = encodeURIComponent(formatted);
-      const link = document.getElementById('rouletteLink');
-      link.href = `https://lazygyu.github.io/roulette/?names=${encoded}`;
+  // 복사
+  copyBtn.addEventListener('click', () => {
+    if (!output.value) return;
+
+    navigator.clipboard.writeText(output.value).then(() => {
+      status.style.display = 'inline';
+      setTimeout(() => status.style.display = 'none', 1500);
     });
-      output.value = formatted;
+  });
+</script>
 
-      // 룰렛 사이트로 닉네임 자동 전달 (URL 파라미터)
-      const encoded = encodeURIComponent(formatted);
-      const link = document.getElementById('rouletteLink');
-      link.href = `https://lazygyu.github.io/roulette/?names=${encoded}`;
-    });
-    });
-  </script>
 </body>
 </html>
