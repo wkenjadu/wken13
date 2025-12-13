@@ -55,10 +55,22 @@
 
     <textarea id="input" placeholder="닉네임을 입력하세요&#10;"></textarea>
 
-    <div class="output">
-      <p><strong>결과</strong></p>
-      <textarea id="output" readonly></textarea>
-    </div>
+<div class="output">
+  <p><strong>결과</strong></p>
+  <textarea id="output" readonly></textarea>
+
+  <button id="copyBtn"
+    style="margin-top:10px;padding:10px 16px;border:none;border-radius:10px;
+           background:#2563eb;color:white;font-size:0.95rem;cursor:pointer;">
+    📋 클립보드로 복사
+  </button>
+
+  <span id="copyStatus"
+    style="margin-left:10px;font-size:0.9rem;color:#16a34a;display:none;">
+    복사됨!
+  </span>
+</div>
+
 
     <div class="hint"></div>
   </div>
@@ -80,3 +92,29 @@
   </script>
 </body>
 </html>
+
+<script>
+  const input = document.getElementById('input');
+  const output = document.getElementById('output');
+  const copyBtn = document.getElementById('copyBtn');
+  const copyStatus = document.getElementById('copyStatus');
+
+  function formatNicknames(text) {
+    return text
+      .split(/\s+/)
+      .filter(v => v.length > 0)
+      .join(', ');
+  }
+
+  input.addEventListener('input', () => {
+    output.value = formatNicknames(input.value);
+  });
+
+  copyBtn.addEventListener('click', async () => {
+    if (!output.value) return;
+    await navigator.clipboard.writeText(output.value);
+    copyStatus.style.display = 'inline';
+    setTimeout(() => copyStatus.style.display = 'none', 1500);
+  });
+</script>
+
