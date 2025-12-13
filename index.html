@@ -118,15 +118,17 @@
   const status = document.getElementById('status');
   const darkToggle = document.getElementById('darkToggle');
 
-  function formatNicknames(text) {
-    return text
-      .replace(/\u00A0/g, ' ')
-      .replace(/\n/g, ' ')
-      .split(' ')
-      .map(v => v.trim())
-      .filter(v => v !== '')
-      .join(', ');
-  }
+function formatNicknames(text) {
+  return text
+    .replace(/\u00A0/g, ' ')  // 특수 공백
+    .replace(/\t/g, ' ')      // ✅ 탭
+    .replace(/\n/g, ' ')      // 엔터
+    .split(' ')               // 공백 기준
+    .map(v => v.trim())
+    .filter(v => v !== '')
+    .join(', ');
+}
+
 
   input.addEventListener('input', () => {
     output.value = formatNicknames(input.value);
