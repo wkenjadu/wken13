@@ -8,6 +8,7 @@
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       background: #f5f7fa;
+      color: #111827;
       padding: 24px;
     }
     .container {
@@ -35,45 +36,79 @@
       border: 1px solid #ccc;
       resize: vertical;
     }
-    .hint {
-      margin-top: 12px;
-      font-size: 0.9rem;
-      color: #666;
-    }
     .output {
       margin-top: 20px;
     }
     .output textarea {
       background: #f9fafb;
     }
+    button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    /* 🌙 다크모드 */
+    body.dark {
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+    body.dark .container {
+      background: #020617;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+    body.dark p {
+      color: #cbd5f5;
+    }
+    body.dark textarea {
+      background: #020617;
+      color: #e5e7eb;
+      border: 1px solid #334155;
+    }
+    body.dark .output textarea {
+      background: #020617;
+    }
+    body.dark button,
+    body.dark a {
+      background: #38bdf8;
+      color: #020617;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>쉼표 자동 생성</h1>
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <h1>쉼표 자동 생성</h1>
+      <button id="darkToggle">🌙 다크모드</button>
+    </div>
+
     <p>닉네임을 입력하면 <strong>공백 또는 줄바꿈</strong> 기준으로 자동으로 쉼표(,)가 들어갑니다.</p>
 
-    <textarea id="input" placeholder="닉네임을 입력하세요&#10;"></textarea>
+    <textarea id="input" placeholder="닉네임을 입력하세요"></textarea>
 
-<div class="output">
-  <p><strong>결과</strong></p>
-  <textarea id="output" readonly></textarea>
+    <div class="output">
+      <p><strong>결과</strong></p>
+      <textarea id="output" readonly></textarea>
 
-  <button id="copyBtn" style="margin-top:10px;">📋 클립보드 복사</button>
-  <span id="status" style="margin-left:10px;color:#16a34a;display:none;">
-    복사됨!
-  </span>
-</div>
-
-
+      <button id="copyBtn" style="margin-top:10px;">📋 클립보드 복사</button>
+      <span id="status" style="margin-left:10px;color:#16a34a;display:none;">
+        복사됨!
+      </span>
+    </div>
 
     <hr style="margin:24px 0;">
 
     <p><strong>🎯 룰렛 사이트 바로가기</strong></p>
-    <a id="rouletteLink" href="https://lazygyu.github.io/roulette/" target="_blank" style="display:inline-block;margin-top:8px;padding:10px 16px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-size:0.95rem;">
+    <a id="rouletteLink"
+       href="https://lazygyu.github.io/roulette/"
+       target="_blank"
+       style="display:inline-block;margin-top:8px;padding:10px 16px;border-radius:12px;text-decoration:none;">
       룰렛 사이트 열기
     </a>
-
   </div>
 
 <script>
@@ -81,32 +116,37 @@
   const output = document.getElementById('output');
   const copyBtn = document.getElementById('copyBtn');
   const status = document.getElementById('status');
+  const darkToggle = document.getElementById('darkToggle');
 
   function formatNicknames(text) {
     return text
-      .replace(/\u00A0/g, ' ')   // 특수 공백
-      .replace(/\n/g, ' ')       // 엔터
-      .split(' ')                // 공백 기준
+      .replace(/\u00A0/g, ' ')
+      .replace(/\n/g, ' ')
+      .split(' ')
       .map(v => v.trim())
       .filter(v => v !== '')
       .join(', ');
   }
 
-  // 입력 → 결과
   input.addEventListener('input', () => {
     output.value = formatNicknames(input.value);
   });
 
-  // 복사
   copyBtn.addEventListener('click', () => {
     if (!output.value) return;
-
     navigator.clipboard.writeText(output.value).then(() => {
       status.style.display = 'inline';
       setTimeout(() => status.style.display = 'none', 1500);
     });
   });
-</script>
 
+  // 🌙 다크모드 토글
+  darkToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark');
+    darkToggle.textContent = document.body.classList.contains('dark')
+      ? '☀️ 라이트모드'
+      : '🌙 다크모드';
+  });
+</script>
 </body>
 </html>
