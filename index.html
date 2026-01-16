@@ -120,14 +120,20 @@
 
 function formatNicknames(text) {
   return text
-    .replace(/\u00A0/g, ' ')  // 특수 공백
-    .replace(/\t/g, ' ')      // ✅ 탭
-    .replace(/\n/g, ' ')      // 엔터
-    .split(' ')               // 공백 기준
-    .map(v => v.trim())
-    .filter(v => v !== '')
+    // 1️⃣ 입력에 있는 쉼표도 공백처럼 처리
+    .replace(/,/g, ' ')
+    // 2️⃣ 제거할 문자 제거
+    .replace(/[()0-9-]/g, '')
+    .replace(/\u00A0/g, ' ')
+    .trim()
+    // 3️⃣ 모든 공백 기준 분리
+    .split(/\s+/)
+    .filter(v => v.length > 0)
+    // 4️⃣ 결과에서만 쉼표 생성
     .join(', ');
 }
+
+
 
 
   input.addEventListener('input', () => {
